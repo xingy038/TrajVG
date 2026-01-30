@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Original Colors Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5E2B97;
+      --primary-light: #F2EAFB;
+      --text: #222;
+      --bg-panel: rgba(255, 255, 255, 0.95);
+      --border: #EAEAEA;
+    }
+    body { margin: 0; overflow: hidden; background: #ffffff; font-family: 'Inter', sans-serif; }
+    #canvas { position: fixed; inset: 0; z-index: 0; }
+    
+    #ui-layer {
+      position: absolute; inset: 0; pointer-events: none; z-index: 10;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 20px;
+    }
+
+    #status-pill {
+      position: absolute; top: 20px; left: 20px;
+      background: var(--bg-panel); padding: 8px 16px; border-radius: 20px;
+      font-size: 13px; font-weight: 500; color: var(--text);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid var(--border);
+      backdrop-filter: blur(8px); pointer-events: auto;
+    }
+
+    #control-bar {
+      margin: 0 auto; background: var(--bg-panel);
+      padding: 12px 20px; border-radius: 16px;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 1px solid var(--border);
+      backdrop-filter: blur(8px); pointer-events: auto;
+      width: 100%; max-width: 800px;
+    }
+
+    button {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text); padding: 8px; border-radius: 8px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; min-width: 36px; height: 36px;
+    }
+    button:hover { background: #f0f0f0; transform: translateY(-1px); }
+    button.active { background: var(--primary); color: white; border-color: var(--primary); }
+    button svg { width: 18px; height: 18px; fill: currentColor; }
+    
+    .timeline-container { flex: 1; display: flex; align-items: center; height: 36px; }
+    input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; cursor: pointer; }
+    input[type=range]:focus { outline: none; }
+    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+      background: var(--primary); margin-top: -5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    #speedBtn { font-size: 13px; font-weight: 600; min-width: 50px; }
+
+    #settings-panel {
+      position: absolute; bottom: 90px; right: 50%; transform: translateX(50%);
+      width: 300px; background: rgba(255,255,255,0.98);
+      border-radius: 12px; padding: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15); border: 1px solid var(--border);
+      pointer-events: auto; display: none; opacity: 0; transition: opacity 0.2s, transform 0.2s;
+    }
+    #settings-panel.visible { display: block; opacity: 1; transform: translateX(50%) translateY(0); }
+    
+    .setting-group { margin-bottom: 16px; }
+    .setting-group h4 { margin: 0 0 10px 0; font-size: 12px; color: #888; text-transform: uppercase; }
+    .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: #444; }
+    .row input[type=range] { width: 50%; }
+
+    #loader {
+      position: fixed; inset: 0; background: white; z-index: 100;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s;
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid var(--primary-light);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="spinner"></div>
+    <div id="loader-text" style="color:#666; font-size:14px; font-weight:500;">Loading Data...</div>
+  </div>
+
+  <div id="canvas"></div>
+
+  <div id="ui-layer">
+    <div id="status-pill">Ready</div>
+
+    <div id="settings-panel">
+      <div class="setting-group">
+        <h4>Point Cloud</h4>
+        <div class="row">
+          <span>Point Size</span>
+          <input id="ptSize" type="range" min="0.005" max="0.1" step="0.005" value="0.03">
+        </div>
+      </div>
+      <div class="setting-group">
+        <h4>Trajectory</h4>
+        <div class="row">
+          <span>Show Trails</span>
+          <input id="showTraj" type="checkbox" checked>
+        </div>
+        <div class="row">
+          <span>History Length</span>
+          <input id="histFrames" type="range" min="0" max="50" value="20">
+        </div>
+        <div class="row">
+          <span>Max Jump Dist</span>
+          <input id="jumpThresh" type="range" min="0.1" max="5.0" step="0.1" value="2.5">
+        </div>
+      </div>
+    </div>
+
+    <div id="control-bar">
+      <button id="playBtn">
+        <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icon-pause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+
+      <div class="timeline-container">
+        <input id="timeline" type="range" min="0" max="100" value="0" step="1">
+      </div>
+
+      <div style="font-size: 12px; color: #666; min-width: 80px; text-align: center; font-variant-numeric: tabular-nums;">
+        <span id="frameCur">0</span> / <span id="frameTotal">0</span>
+      </div>
+
+      <button id="speedBtn">2x</button>
+      
+      <button id="settingsBtn">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6-3.6 3.6z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    function $(id) { return document.getElementById(id); }
+
+    const CONFIG = { EXTRINSICS_IS_C2W: true, INVALID_THRESH: 9000.0 };
+
+    class Viewer {
+      constructor() {
+        this.data = null;
+        this.meta = null;
+        this.T = 0; this.N = 0; this.M = 0;
+
+        this.frame = 0;
+        this.playing = true;
+        this.speedList = [1, 2, 4, 8];
+        this.speedIndex = 1;
+
+        this.baseFPS = 30; 
+        this.playbackSpeed = 60; 
+
+        this.lastTime = performance.now();
+        this.w2cMatrix = new THREE.Matrix4();
+
+        this.initThree();
+        this.bindUI();
+        this.load();
+      }
+
+      initThree() {
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0xffffff);
+
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+        this.camera.position.set(0, 1.5, 4.0);
+
+        this.renderer = new THREE.WebGLRenderer({antialias:true, powerPreference: "high-performance"});
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        $("canvas").appendChild(this.renderer.domElement);
+
+        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.08;
+
+        const amb = new THREE.AmbientLight(0xffffff, 0.6);
+        const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+        dir.position.set(5, 10, 7);
+        this.scene.add(amb, dir);
+
+        this.worldGroup = new THREE.Group();
+        this.worldGroup.matrixAutoUpdate = false;
+        this.scene.add(this.worldGroup);
+
+        this.pcGeom = new THREE.BufferGeometry();
+        this.pcMat = new THREE.PointsMaterial({ size: 0.03, vertexColors: true, sizeAttenuation: true });
+        
+        this.pcMat.onBeforeCompile = (shader) => {
+           shader.vertexShader = shader.vertexShader.replace(`#include <begin_vertex>`,
+             `#include <begin_vertex>
+              if (abs(position.x) > ${CONFIG.INVALID_THRESH.toFixed(1)}) {
+                 gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return;
+              }`);
+        };
+
+        this.pc = new THREE.Points(this.pcGeom, this.pcMat);
+        this.pc.frustumCulled = false; 
+        this.worldGroup.add(this.pc);
+
+        this.trajGroup = new THREE.Group();
+        this.worldGroup.add(this.trajGroup);
+
+        window.addEventListener("resize", () => {
+          this.camera.aspect = window.innerWidth/window.innerHeight;
+          this.camera.updateProjectionMatrix();
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+      }
+
+      async load() {
+        try {
+            const url = new URL(window.location.href);
+            const dataPath = url.searchParams.get("data") || "data.bin";
+            
+            $("loader-text").textContent = "Loading data...";
+            const resp = await fetch(dataPath);
+            if (!resp.ok) throw new Error("404 Not Found");
+            const buf = await resp.arrayBuffer();
+            const dv = new DataView(buf);
+            const headerLen = dv.getUint32(0, true);
+            const header = JSON.parse(new TextDecoder("utf-8").decode(buf.slice(4, 4 + headerLen)));
+
+            $("loader-text").textContent = "Processing...";
+            await new Promise(r => setTimeout(r, 10));
+
+            const raw = pako.inflate(new Uint8Array(buf, 4 + headerLen)).buffer;
+            this.data = {};
+            for (const k in header) {
+                if (k === "meta") continue;
+                const {dtype, shape, offset, length} = header[k];
+                const slice = raw.slice(offset, offset + length);
+                this.data[k] = { data: dtype === "float32" ? new Float32Array(slice) : new Uint8Array(slice), shape };
+            }
+            this.meta = header.meta;
+            this.finalizeLoad();
+        } catch (e) {
+            console.error(e);
+            $("loader-text").textContent = "Error: Failed to load data.";
+        }
+      }
+
+      finalizeLoad() {
+        this.T = this.meta.totalFrames | 0;
+        this.N = this.meta.numPoints | 0;
+        this.M = this.meta.numTrajectories | 0;
+        
+        this.baseFPS = this.meta.baseFrameRate || 30;
+        const initialMul = this.speedList[this.speedIndex];
+        this.playbackSpeed = this.baseFPS * initialMul;
+        $("speedBtn").textContent = initialMul + "x";
+        $("status-pill").textContent = "Playing (" + initialMul + "x)";
+
+        $("frameTotal").textContent = this.T - 1;
+        $("timeline").max = this.T - 1;
+
+        this.pcPosBuffer = new Float32Array(this.N * 3);
+        this.pcGeom.setAttribute("position", new THREE.BufferAttribute(this.pcPosBuffer, 3).setUsage(THREE.DynamicDrawUsage));
+        const colBuf = this.data.colors.data instanceof Uint8Array ? new Uint8Array(this.N * 3) : new Float32Array(this.N * 3);
+        this.pcGeom.setAttribute("color", new THREE.BufferAttribute(colBuf, 3, this.data.colors.data instanceof Uint8Array));
+
+        this.buildTrajObjects();
+
+        if (this.data.extrinsics && this.data.extrinsics.data) {
+            const m0 = new THREE.Matrix4().fromArray(this.data.extrinsics.data.subarray(0, 16)).transpose();
+            const w2c0 = CONFIG.EXTRINSICS_IS_C2W ? m0.invert() : m0;
+            this.w2cMatrix.multiplyMatrices(new THREE.Matrix4().makeScale(1, -1, -1), w2c0);
+        } else {
+            this.w2cMatrix.makeScale(1, -1, -1);
+        }
+        this.worldGroup.matrix.copy(this.w2cMatrix);
+        this.worldGroup.updateMatrixWorld(true);
+
+        $("loader").style.opacity = 0;
+        setTimeout(() => $("loader").style.display = "none", 500);
+
+        this.onFrame(0);
+        this.lastTime = performance.now();
+        this.animate();
+      }
+
+      buildTrajObjects() {
+        this.trajLines = []; this.trajDots = [];
+        const dotGeo = new THREE.SphereGeometry(1, 8, 8); 
+        for (let i = 0; i < this.M; i++) {
+            const col = new THREE.Color().setHSL((i/Math.max(1,this.M)), 0.9, 0.5);
+            const dot = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({color: col}));
+            dot.scale.setScalar(0.04);
+            this.trajGroup.add(dot); this.trajDots.push(dot);
+
+            const posBuff = new Float32Array(100 * 3); 
+            const line = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: col, opacity: 0.8, transparent: true }));
+            line.geometry.setAttribute('position', new THREE.BufferAttribute(posBuff, 3));
+            line.frustumCulled = false;
+            this.trajGroup.add(line); this.trajLines.push(line);
+        }
+      }
+
+      onFrame(f) {
+        if (!this.data) return;
+        this.frame = f;
+        $("timeline").value = f;
+        $("frameCur").textContent = f;
+
+        const start = f * this.N * 3;
+        this.pcGeom.attributes.position.array.set(this.data.world_points.data.subarray(start, start + this.N * 3));
+        this.pcGeom.attributes.color.array.set(this.data.colors.data.subarray(start, start + this.N * 3));
+        this.pcGeom.attributes.position.needsUpdate = true;
+        this.pcGeom.attributes.color.needsUpdate = true;
+
+        if (this.trajGroup.visible) this.updateTrajectories(f);
+      }
+
+      updateTrajectories(f) {
+        const hist = parseInt($("histFrames").value);
+        const jumpThresh = parseFloat($("jumpThresh").value);
+        const jumpThreshSq = jumpThresh * jumpThresh;
+
+        const trajData = this.data.trajectories.data;
+        const M = this.M;
+        const tStart = Math.max(0, f - hist + 1);
+        
+        for (let i = 0; i < M; i++) {
+            const headOff = (f * M + i) * 3;
+            if (Math.abs(trajData[headOff]) > CONFIG.INVALID_THRESH) {
+                this.trajDots[i].visible = false; this.trajLines[i].visible = false; continue;
+            }
+            this.trajDots[i].visible = true;
+            this.trajDots[i].position.set(trajData[headOff], trajData[headOff+1], trajData[headOff+2]);
+
+            const line = this.trajLines[i];
+            if ((f - tStart) > 0) {
+                line.visible = true;
+                const pos = line.geometry.attributes.position.array;
+                let ptr = 0;
+                let lastX=0, lastY=0, lastZ=0;
+                let hasLast = false;
+
+                for (let t = tStart; t <= f; t++) {
+                    const off = (t * M + i) * 3;
+                    const x = trajData[off]; const y = trajData[off+1]; const z = trajData[off+2];
+                    if (Math.abs(x) > CONFIG.INVALID_THRESH) { hasLast = false; continue; }
+                    if (hasLast) {
+                        const distSq = (x-lastX)**2 + (y-lastY)**2 + (z-lastZ)**2;
+                        if (distSq > jumpThreshSq) ptr = 0;
+                    }
+                    pos[ptr++] = x; pos[ptr++] = y; pos[ptr++] = z;
+                    lastX = x; lastY = y; lastZ = z; hasLast = true;
+                }
+                line.geometry.setDrawRange(0, ptr/3);
+                line.geometry.attributes.position.needsUpdate = true;
+            } else { line.visible = false; }
+        }
+      }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+        const now = performance.now();
+        const delta = (now - this.lastTime) / 1000;
+
+        if (this.playing && this.meta) {
+            const framesToAdvance = Math.floor(delta * this.playbackSpeed);
+            if (framesToAdvance > 0) {
+                this.onFrame((this.frame + framesToAdvance) % this.T);
+                this.lastTime = now; 
+            }
+        } else {
+            this.lastTime = now;
+        }
+
+        this.controls.update();
+        this.renderer.render(this.scene, this.camera);
+      }
+      
+      bindUI() {
+        const togglePlay = () => {
+            this.playing = !this.playing;
+            $("icon-play").style.display = this.playing ? 'none' : 'block';
+            $("icon-pause").style.display = this.playing ? 'block' : 'none';
+            $("status-pill").textContent = this.playing ? "Playing (" + this.speedList[this.speedIndex] + "x)" : "Paused";
+            if(this.playing) this.lastTime = performance.now();
+        };
+        $("playBtn").onclick = togglePlay;
+
+        $("timeline").oninput = (e) => {
+            this.playing = false; togglePlay(); this.playing = false;
+            this.onFrame(parseInt(e.target.value));
+        };
+
+        $("speedBtn").onclick = () => {
+            this.speedIndex = (this.speedIndex + 1) % this.speedList.length;
+            const mul = this.speedList[this.speedIndex];
+            this.playbackSpeed = this.baseFPS * mul;
+            $("speedBtn").textContent = mul + "x";
+            $("status-pill").textContent = "Speed: " + mul + "x";
+        };
+
+        const settingsBtn = $("settingsBtn");
+        settingsBtn.onclick = () => settingsBtn.classList.toggle("active") | $("settings-panel").classList.toggle("visible");
+
+        $("ptSize").oninput = (e) => this.pcMat.size = parseFloat(e.target.value);
+        const refresh = () => !this.playing && this.onFrame(this.frame);
+        $("histFrames").oninput = refresh;
+        $("jumpThresh").oninput = refresh;
+        $("showTraj").onchange = (e) => { this.trajGroup.visible = e.target.checked; if(e.target.checked) this.onFrame(this.frame); };
+      }
+    }
+
+    window.onload = () => new Viewer();
+  </script>
+</body>
+</html>

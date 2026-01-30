@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TrajVG: 3D Trajectory-Coupled Visual Geometry Learning">
+    <meta name="keywords" content="3D Tracking, 3D Peconstruction, Point Tracking, Computer Vision, ">
+    <meta name="author" content="Xingyu Miao, et al.">
+
+    <!-- Open Graph Protocol -->
+    <meta property="og:title" content="TrajVG: 3D Trajectory-Coupled Visual Geometry Learning">
+    <meta property="og:type" content="website">
+
+    <title>TrajVG: 3D Trajectory-Coupled Visual Geometry Learning</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>TrajVG</h1>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Toggle menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links" id="nav-links">
+                <a href="#viz" class="nav-link">Video</a>
+                <a href="#abstract" class="nav-link">Abstract</a>
+                <a href="#visualization" class="nav-link">Visualization</a>
+                <a href="#downloads" class="nav-link">Downloads</a>
+                <a href="#citation" class="nav-link">Citation</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container">
+            <h1 class="title">TrajVG: 3D Trajectory-Coupled Visual Geometry Learning</h1>
+            <div class="authors">
+                <div class="authors-list">
+                    <span class="author">
+                    <a href="URL_Xingyu_Miao" target="https://xingy038.github.io/">Xingyu Miao</a><sup>1</sup>
+                    </span>,
+                    <span class="author">
+                    <a href="URL_Weiguang_Zhao" target="https://weiguangzhao.github.io/">Weiguang Zhao</a><sup>2</sup>
+                    </span>,
+                    <span class="author">
+                    <a href="URL_Tao_Lu" target="https://inspirelt.github.io/">Tao Lu</a><sup>3</sup>
+                    </span>,
+                    <span class="author">
+                    <a href="URL_Linning_Xu" target="https://eveneveno.github.io/lnxu/">Linning Xu</a><sup>3</sup>
+                    </span>,
+                    <span class="author">
+                    <a href="URL_Mulin_Yu" target="https://mulinyu.github.io/">Mulin Yu</a><sup>3</sup>
+                    </span>,
+                    <span class="author">
+                    <a href="URL_Yang_Long" target="https://www.durham.ac.uk/staff/yang-long/">Yang Long</a><sup>1,†</sup>
+                    </span>,
+                    <span class="author">
+                    <a href="URL_Jiangmiao_Pang" target="https://oceanpang.github.io/">Jiangmiao Pang</a><sup>3</sup>
+                    </span>,
+                    <span class="author">
+                    <a href="URL_Junting_Dong" target="https://jtdong.com/">Junting Dong</a><sup>3,†, &#10024;</sup>
+                    </span>
+                </div>
+                <div class="affiliations">
+                    <p class="affil"><sup>1</sup>Durham University, <sup>2</sup>University of Liverpool, <sup>3</sup>Shanghai AI Laboratory</p>
+                    <p class="corresponding"><sup>†</sup>Corresponding Author, <sup>&#10024</sup>Project Leader</p>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="Tracking_Dataset.pdf" class="btn btn-primary" target="_blank">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+                        <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                    </svg>
+                    Paper
+                </a>
+                <a href="https://github.com/xxx" class="btn btn-secondary">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+                    0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                    -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2
+                    -3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82
+                    .64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08
+                    2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01
+                    1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                GitHub
+                </a>
+                <a href="#citation" class="btn btn-secondary">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                        <path d="M4.603 12.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.68 7.68 0 0 1 1.482-.645 19.701 19.701 0 0 0 1.062-2.227 7.269 7.269 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.187-.012.395-.047.614-.084.51-.27 1.134-.52 1.794a10.954 10.954 0 0 0 .98 1.686 5.753 5.753 0 0 1 1.334.05c.364.065.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.856.856 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.716 5.716 0 0 1-.911-.95 11.642 11.642 0 0 0-1.997.406 11.311 11.311 0 0 1-1.021 1.51c-.29.35-.608.655-.926.787a.793.793 0 0 1-.58.029zm1.379-1.901c-.166.076-.32.156-.459.238-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361.01.022.02.036.026.044a.27.27 0 0 0 .035-.012c.137-.056.355-.235.635-.572a8.18 8.18 0 0 0 .45-.606zm1.64-1.33a12.647 12.647 0 0 1 1.01-.193 11.666 11.666 0 0 1-.51-.858 20.741 20.741 0 0 1-.5 1.05zm2.446.45c.15.162.296.3.435.41.24.19.407.253.498.256a.107.107 0 0 0 .07-.015.307.307 0 0 0 .094-.125.436.436 0 0 0 .059-.2.095.095 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a3.881 3.881 0 0 0-.612-.053zM8.078 5.8a6.7 6.7 0 0 0 .2-.828c.031-.188.043-.343.038-.465a.613.613 0 0 0-.032-.198.517.517 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822.024.111.054.227.09.346z"/>
+                    </svg>
+                    BibTeX
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Visualization Section -->
+    <section id="viz">
+        <div class="container">
+            <!-- Video Results -->
+            <div class="viz-section">
+                <h3 class="viz-section-title">Video</h3>
+<!--                <p class="viz-description">Point tracking results across diverse scenarios including navigation, human motion, animal movement, and object manipulation.</p>-->
+                <div class="viz-video-container">
+                    <video controls autoplay muted loop playsinline>
+                        <source src="assets/videos/visualization.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Abstract -->
+    <section id="abstract">
+        <div class="container">
+            <h2 class="section-title">Abstract</h2>
+            <div class="abstract-content">
+                <p>Global-reference becomes ambiguous under multiple motions, while the local pointmap relies heavily on estimated relative poses and can drift, causing cross-frame misalignment and duplicated structures.</p>
+                
+                <P>We propose <strong>TrajVG</strong>, a reconstruction framework that makes cross-frame 3D correspondence an explicit prediction by estimating camera-coordinate 3D trajectories. </P>
+
+                <p>We couple sparse trajectories, per-frame local point maps, and relative camera poses with geometric consistency objectives: (i) bidirectional trajectory–pointmap consistency with controlled gradient flow, and (ii) a pose consistency objective driven by static track anchors that suppresses gradients from dynamic regions.</p>
+
+                <p>To scale training to in-the-wild videos where 3D trajectory labels are scarce, we reformulate the same coupling constraints into self-supervised objectives using only pseudo 2D tracks, enabling unified training with mixed supervision. Extensive experiments across 3D tracking, pose estimation, point-map reconstruction, and video depth show that  <strong>TrajVG</strong> surpasses the current feedforward performance baseline.</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="subsection">
+                <h3 class="subsection-title">Pipeline</h3>
+                <div class="pipeline-content">
+                    <div class="pipeline-image">
+                        <img src="assets/images/pipeline.png" loading="lazy">
+                    </div>
+                        <div class="pipeline-step">
+                            <div class="step-content">
+                                <p> We jointly 3D track points with point-map and camera poses that tracking provides a direct improvement on both geometry reconstruction and camera motion.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="subsection">
+                <h3 class="subsection-title">Qualitative Comparison</h3>
+                <div class="pipeline-content">
+                    <div class="pipeline-image">
+                        <img src="assets/images/qualitative.png" loading="lazy">
+                    </div>
+                        <div class="pipeline-step">
+                            <div class="step-content">
+                                <p> Our method achieves better reconstruction results in field scenarios. In contrast, baseline methods suffer from issues such as overlap and loss of detail.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Dataset Overview -->
+    <section id="Visualization">
+        <div class="container">
+
+            <h2 class="section-title">Interactive Visualization</h2>
+                <div class="viz-section">
+                    <h3 class="viz-section-title">Interactive 3D Reconstruction Point Cloud</h3>
+                    <div class="pointcloud-card">
+                        <div class="frame-controls">
+                            <button id="framePrevBtn" class="frame-btn">Prev</button>
+                            <div id="frameLabel" class="frame-label">Frame 0 / 0</div>
+                            <button id="frameNextBtn" class="frame-btn">Next</button>
+                        </div>
+                        <div class="pointcloud-wrapper">
+                            <canvas id="renderCanvas" class="babylon-model-viewer"></canvas>
+                        </div>
+                        <div class="scene-thumbnail-bar" id="sceneThumbnailBar">
+                            <div class="scene-thumbnail-wrapper">
+                                <img
+                                    class="scene-thumbnail active"
+                                    src="assets/images/skating.jpg"
+                                    data-glb="assets/pointclouds/skating.glb"
+                                    alt="skating"
+                                />
+                                <div class="scene-thumbnail-label">Skating</div>
+                            </div>
+                            <div class="scene-thumbnail-wrapper">
+                                <img
+                                    class="scene-thumbnail"
+                                    src="assets/images/oil.png"
+                                    data-glb="assets/pointclouds/oil.glb"
+                                    alt="skating-02"
+                                />
+                                <div class="scene-thumbnail-label">Oil</div>
+                            </div>
+                            <div class="scene-thumbnail-wrapper">
+                                <img
+                                    class="scene-thumbnail"
+                                    src="assets/images/Sisters_Statue.jpg"
+                                    data-glb="assets/pointclouds/Sisters_Statue.glb"
+                                    alt="skating-03"
+                                />
+                                <div class="scene-thumbnail-label">Sisters Statue</div>
+                            </div>
+                            <div class="scene-thumbnail-wrapper">
+                                <img
+                                    class="scene-thumbnail"
+                                    src="assets/images/Festival.jpg"
+                                    data-glb="assets/pointclouds/Festival.glb"
+                                    alt="skating-04"
+                                />
+                                <div class="scene-thumbnail-label">Festival</div>
+                            </div>
+                            <div class="scene-thumbnail-wrapper">
+                                <img
+                                    class="scene-thumbnail"
+                                    src="assets/images/boat.jpg"
+                                    data-glb="assets/pointclouds/boat.glb"
+                                    alt="skating-04"
+                                />
+                                <div class="scene-thumbnail-label">Boat</div>
+                            </div>
+                            <div class="scene-thumbnail-wrapper">
+                                <img
+                                    class="scene-thumbnail"
+                                    src="assets/images/dance.jpg"
+                                    data-glb="assets/pointclouds/dance.glb"
+                                    alt="skating-04"
+                                />
+                                <div class="scene-thumbnail-label">Dance</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="viz-section">
+                <h3 class="viz-section-title">Interactive 3D Tracking</h3>
+                <div class="viz-container">
+                    <div class="viz-loading idle" id="vizLoader">
+                        <div class="viz-spinner"></div>
+                        <p>Click the image below to load the visualization.</p>
+                    </div>
+                    <iframe id="vizFrame" name="vizFrame" src="about:blank" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="viz-thumbnail-bar" id="vizThumbnailBar">
+                    <div class="viz-thumbnail-wrapper">
+                        <a class="viz-thumbnail-link" href="viz/viz.html?data=../assets/tracking/lucia.bin" target="vizFrame">
+                            <img
+                                class="viz-thumbnail"
+                                src="assets/images/lucia.jpg"
+                                data-src="viz/viz.html?data=../assets/tracking/lucia.bin"
+                                alt="lucia"
+                            />
+                        </a>
+                        <div class="viz-thumbnail-label">Lucia</div>
+                    </div>
+
+                    <div class="viz-thumbnail-wrapper">
+                        <a class="viz-thumbnail-link" href="viz/viz.html?data=../assets/tracking/soapbox.bin" target="vizFrame">
+                            <img
+                                class="viz-thumbnail"
+                                src="assets/images/soapbox.jpg"
+                                data-src="viz/viz.html?data=../assets/tracking/soapbox.bin"
+                                alt="soapbox"
+                            />
+                        </a>
+                        <div class="viz-thumbnail-label">Soapbox</div>
+                    </div>
+
+                    <div class="viz-thumbnail-wrapper">
+                        <a class="viz-thumbnail-link" href="viz/viz.html?data=../assets/tracking/Stroller.bin" target="vizFrame">
+                            <img
+                                class="viz-thumbnail"
+                                src="assets/images/Stroller.jpg"
+                                data-src="viz/viz.html?data=../assets/tracking/Stroller.bin"
+                                alt="Stroller"
+                            />
+                        </a>
+                        <div class="viz-thumbnail-label">Stroller</div>
+                    </div>
+                
+                    <div class="viz-thumbnail-wrapper">
+                        <a class="viz-thumbnail-link" href="viz/viz.html?data=../assets/tracking/robot1.bin" target="vizFrame">
+                            <img
+                                class="viz-thumbnail"
+                                src="assets/images/robot1.png"
+                                data-src="viz/viz.html?data=../assets/tracking/robot1.bin"
+                                alt="Robot"
+                            />
+                        </a>
+                        <div class="viz-thumbnail-label">Robot</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Downloads -->
+    <section id="downloads">
+        <div class="container">
+            <h2 class="section-title">Downloads & Resources</h2>
+            <div class="downloads-grid">
+                <div class="download-card">
+                    <div class="download-icon">📄</div>
+                    <h3>Paper</h3>
+                    <p>Read the full paper with detailed methodology and experiments</p>
+                    <a href="Tracking_Dataset.pdf" class="btn btn-primary" target="_blank">Download PDF</a>
+                </div>
+                <div class="download-card">
+                    <div class="download-icon">💻</div>
+                    <h3>Code</h3>
+                    <p>Training and evaluation scripts for point tracking methods</p>
+                    <a href="#" class="btn btn-secondary disabled">Coming Soon</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Citation -->
+    <section id="citation">
+        <div class="container">
+            <h2 class="section-title">Citation</h2>
+            <div class="citation-box">
+                <pre><code>@inproceedings{TrajVG,
+  title   = {TrajVG: 3D Trajectory-Coupled Visual Geometry Learning},
+  author  = {Miao, Xingyu and Zhao, Weiguang and Lu, Tao and Xu, Linning and Yu, Mulin and Long, Yang and Pang, Jiangmiao and Dong, Junting},
+  year    = {2026}
+}
+</code></pre>
+                <button class="copy-btn" onclick="copyBibTeX()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                    </svg>
+                    Copy
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 TrajVG. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/babylon.js"></script>
+    <script src="js/babylonjs.loaders.min.js"></script>
+    <script src="js/babylon-model-viewer.js"></script>
+    <script src="js/pointcloud-viewer.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

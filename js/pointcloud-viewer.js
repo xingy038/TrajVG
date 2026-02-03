@@ -272,17 +272,31 @@ function attachPanControls(viewer, frameCamera) {
     let panning = false;
     let lastX = 0;
     let lastY = 0;
+    let controlsDetached = false;
+
+    const detachControls = () => {
+        if (controlsDetached) return;
+        try { frameCamera.detachControl(); } catch (e) {}
+        controlsDetached = true;
+    };
+
+    const restoreControls = () => {
+        if (!controlsDetached) return;
+        try { frameCamera.attachControl(viewer.canvas, true); } catch (e) {}
+        controlsDetached = false;
+    };
 
     const onPointerDown = (evt) => {
         const isShiftLeft = evt.shiftKey && evt.button === 0;
         const isMiddleRight = evt.button === 1 || evt.button === 2;
         if (!isShiftLeft && !isMiddleRight) return;
         if (viewer.scene && viewer.scene.activeCamera !== frameCamera) return;
+        detachControls();
         panning = true;
         lastX = evt.clientX;
         lastY = evt.clientY;
         evt.preventDefault();
-        evt.stopPropagation();
+        evt.stopImmediatePropagation();
     };
 
     const onPointerMove = (evt) => {
@@ -299,11 +313,12 @@ function attachPanControls(viewer, frameCamera) {
         frameCamera.position.addInPlace(right.scale(-dx * scale));
         frameCamera.position.addInPlace(up.scale(dy * scale));
         evt.preventDefault();
-        evt.stopPropagation();
+        evt.stopImmediatePropagation();
     };
 
     const onPointerUp = () => {
         panning = false;
+        restoreControls();
     };
 
     viewer._framePanHandlers = { onPointerDown, onPointerMove, onPointerUp };

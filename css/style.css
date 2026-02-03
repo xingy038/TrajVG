@@ -1325,18 +1325,23 @@ footer p {
     border-color: #1e3a8a;
 }
 
-.pointcloud-wrapper {
-    width: 100%;
-    aspect-ratio: 1.4 / 1;
-    background: #f8fafc;
-    border-radius: 0.9rem;
-    overflow: hidden;
+.pointcloud-wrapper{
+  width: 100%;
+  aspect-ratio: 1.4 / 1;
+  min-height: 320px;
+  background: #f8fafc;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  position: relative;
 }
 
-.pointcloud-wrapper canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
+.pointcloud-wrapper canvas{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 canvas.babylon-model-viewer {

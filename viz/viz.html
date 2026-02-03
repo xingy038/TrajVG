@@ -305,7 +305,7 @@
         for (let i = 0; i < this.M; i++) {
             const col = new THREE.Color().setHSL((i/Math.max(1,this.M)), 0.9, 0.5);
             const dot = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({color: col}));
-            dot.scale.setScalar(0.04);
+            dot.scale.setScalar(0.02);
             this.trajGroup.add(dot); this.trajDots.push(dot);
 
             const posBuff = new Float32Array(100 * 3); 

@@ -36,11 +36,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Copy BibTeX Citation
 // ============================================
 function copyBibTeX() {
-    const citationText = `@inproceedings{synthverse2025,
-  title={SynthVerse: A Large-Scale Diverse Synthetic Dataset for Point Tracking},
-  author={Zhao, Weiguang and Xu, Haoran and Miao, Xingyu and Zhao, Qin and Zhang, Rui and Huang, Kaizhu and Gao, Ning and Cao, Peizhou and Sun, Mingze and Yu, Mulin and Lu, Tao and Xu, Linning and Dong, Junting and Pang, Jiangmiao},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year={2025}
+    const citationText = `@misc{TrajVG,
+      title={TrajVG: 3D Trajectory-Coupled Visual Geometry Learning}, 
+      author={Xingyu Miao and Weiguang Zhao and Tao Lu and Linning Yu and Mulin Yu and Yang Long and Jiangmiao Pang and Junting Dong},
+      year={2026},
+      eprint={2602.04439},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2602.04439}, 
 }`;
 
     const copyBtn = document.querySelector('.copy-btn');

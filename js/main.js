@@ -38,7 +38,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 function copyBibTeX() {
     const citationText = `@misc{TrajVG,
       title={TrajVG: 3D Trajectory-Coupled Visual Geometry Learning}, 
-      author={Xingyu Miao and Weiguang Zhao and Tao Lu and Linning Yu and Mulin Yu and Yang Long and Jiangmiao Pang and Junting Dong},
+      author={Xingyu Miao and Weiguang Zhao and Tao Lu and Linning Xu and Mulin Yu and Yang Long and Jiangmiao Pang and Junting Dong},
       year={2026},
       eprint={2602.04439},
       archivePrefix={arXiv},

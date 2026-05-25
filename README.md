@@ -58,10 +58,10 @@ Open the printed local URL in a browser.
 
 ## 🎓 BibTeX
 
-If you find SynthVerse useful, please cite:
+If you find TrajVG useful, please cite:
 
 ```bibtex
-@article{rajVG,
+@article{TrajVG,
       title={TrajVG: 3D Trajectory-Coupled Visual Geometry Learning}, 
       author={Xingyu Miao and Weiguang Zhao and Tao Lu and Linning Xu and Mulin Yu and Yang Long and Jiangmiao Pang and Junting Dong},
       year={2026},
